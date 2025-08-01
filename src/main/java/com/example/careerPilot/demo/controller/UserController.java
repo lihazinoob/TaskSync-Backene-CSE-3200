@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @Slf4j
-@CrossOrigin(origins ="http://localhost:5173/")
+//@CrossOrigin(origins ="http://localhost:5173/")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -56,4 +56,24 @@ public class UserController {
         UserDTO userDTO = UserDTO.fromEntity(user);
         return ResponseEntity.ok(userDTO);
     }
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/profile/updateinfo/{username}")
+    public ResponseEntity<UserDTO> updateUserInformation(
+            @PathVariable String username,
+            @Valid @RequestBody UserProfileUpdateRequest updateRequest
+    ) {
+        //log.info("PUT /api/users/profile/update/{} called", username);
+        return ResponseEntity.ok(userService.updateUserInformation(username, updateRequest));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/profile/updatestatus/{username}")
+    public ResponseEntity<UserDTO> updateUserStatus(
+            @PathVariable String username,
+            @Valid @RequestBody UserProfileUpdateRequest updateRequest
+    ) {
+        log.info("PUT /api/users/profile/update/{} called", username);
+        return ResponseEntity.ok(userService.updateUserStatus(username, updateRequest));
+    }
+
 }

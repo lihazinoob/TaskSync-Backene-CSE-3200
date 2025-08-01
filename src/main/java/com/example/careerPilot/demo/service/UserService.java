@@ -1,8 +1,10 @@
 package com.example.careerPilot.demo.service;
 
+import com.example.careerPilot.demo.dto.UserDTO;
 import com.example.careerPilot.demo.dto.UserProfileUpdateRequest;
 import com.example.careerPilot.demo.entity.User;
 import com.example.careerPilot.demo.repository.userRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -65,4 +67,22 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    public UserDTO updateUserInformation(String username, @Valid UserProfileUpdateRequest updateRequest) {
+        User user = getUserByUsername(username);
+        user.setCountry(updateRequest.getCountry());
+        user.setIndustry(updateRequest.getIndustry());
+        user.setPhoneNumber(updateRequest.getPhoneNumber());
+        return UserDTO.fromEntity(userRepository.save(user));
+
+    }
+
+    public UserDTO updateUserStatus(String username, @Valid UserProfileUpdateRequest updateRequest) {
+        User user = getUserByUsername(username);
+        user.setAvailabilityStatus(updateRequest.getAvailabilityStatus());
+        user.setPreferredWorkingHours(updateRequest.getPreferredWorkingHours());
+        user.setLanguage(updateRequest.getLanguage());
+        return UserDTO.fromEntity(userRepository.save(user));
+    }
 }
+
