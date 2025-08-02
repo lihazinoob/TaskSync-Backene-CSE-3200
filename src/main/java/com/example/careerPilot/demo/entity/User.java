@@ -63,7 +63,7 @@ public class User implements UserDetails {
     private String profileImage;
 
     @Column(name = "experience_years", columnDefinition = "int default 0")
-    private Integer experienceYears;
+    private int experienceYears;
 
     @Column(name = "industry")
     private String industry;
@@ -86,10 +86,13 @@ public class User implements UserDetails {
     private LocalDate lastEvaluationDate;
 
     @Column(name = "completed_projects", columnDefinition = "int default 0")
-    private Integer completedProjects;
+    private int completedProjects;
+
+    @Column(name = "total_review" , columnDefinition = "int default 0")
+    private int totalReview;
 
     @Column(name = "ongoing_projects", columnDefinition = "int default 0")
-    private Integer ongoingProjects;
+    private int ongoingProjects;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "account_status", columnDefinition = "enum('active', 'inactive', 'suspended') default 'active'")
@@ -134,7 +137,7 @@ public class User implements UserDetails {
     }
 
     public enum AvailabilityStatus {
-        AVAILABLE, BUSY, ON_LEAVE
+        available, busy, on_leave
     }
 
     public enum AccountStatus {
@@ -146,13 +149,8 @@ public class User implements UserDetails {
     }
 
     // User to Posts
-
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
-
-
-
     //  User to Comments
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("user")
@@ -177,5 +175,23 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user2" , cascade = CascadeType.ALL ,orphanRemoval = true)
     private List<Connection> connectionReceived;
 
+    //Evaluation relationships
+    @OneToMany(mappedBy = "evaluatedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Evaluation> evaluationsGiven = new ArrayList<>();
+    @OneToMany(mappedBy = "evaluatedTo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Evaluation> evaluationsReceived = new ArrayList<>();
+    // project user creator
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Project> projects = new ArrayList<>();
+    // project user
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectUser> projectUsers = new ArrayList<>();
+    // project user hierarchy
+    // User is superior in these hierarchies
+    @OneToMany(mappedBy = "superiorUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectUserHierarchy> hierarchiesAsSuperior = new ArrayList<>();
+    // User is subordinate in these hierarchies
+    @OneToMany(mappedBy = "subordinateUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectUserHierarchy> hierarchiesAsSubordinate = new ArrayList<>();
 
 }

@@ -22,14 +22,14 @@ public class UserDTO {
     private String phoneNumber;
     private String country;
     private String profileImage;
-    private Integer experienceYears;
+    private int experienceYears;
     private String industry;
     private User.AvailabilityStatus availabilityStatus;
     private String preferredWorkingHours;
     private BigDecimal performanceRating;
     private LocalDate lastEvaluationDate;
-    private Integer completedProjects;
-    private Integer ongoingProjects;
+    private int completedProjects;
+    private int ongoingProjects;
     private User.AccountStatus accountStatus;
     private String language;
 
