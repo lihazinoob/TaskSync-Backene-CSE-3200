@@ -2,7 +2,9 @@ package com.example.careerPilot.demo.service;
 
 import com.example.careerPilot.demo.dto.ProjectDTO;
 import com.example.careerPilot.demo.entity.Project;
+import com.example.careerPilot.demo.entity.ProjectUser;
 import com.example.careerPilot.demo.entity.User;
+import com.example.careerPilot.demo.repository.ProjectUserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,8 @@ import java.util.List;
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final userRepository userRepository;
+    private final ProjectUserRepository projectUserRepository;
+
     public ProjectDTO createProject(@Valid ProjectDTO projectDTO, UserDetails userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + userDetails.getUsername()));
@@ -39,6 +43,14 @@ public class ProjectService {
                 .updatedAt(java.time.LocalDateTime.now())
                 .build();
         Project savedProject = projectRepository.save(project);
+        ProjectUser projectUser = ProjectUser.builder()
+                .project(savedProject)
+                .user(user)
+                .role(Project.ProjectRole.CREATOR)
+                .status(ProjectUser.RequestStatus.APPROVED)
+                .joinedAt(java.time.LocalDateTime.now())
+                .build();
+        projectUserRepository.save(projectUser);
         return ProjectDTO.fromEntity(savedProject);
     }
 
