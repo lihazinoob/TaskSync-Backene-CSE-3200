@@ -56,9 +56,10 @@ public class InvitationController {
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(invitationService.rejectInvitation(invitationId, userDetails.getUsername()));
     }
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/received")
-    public List<InvitationDTO> getInvitationsReceivedByUser(String username) {
-        User user = userRepository.findByUsername(username)
+    public List<InvitationDTO> getInvitationsReceivedByUser(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return invitationRepository.findByInvitedUser(user)
                 .stream()
