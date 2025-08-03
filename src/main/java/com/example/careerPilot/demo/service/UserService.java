@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -22,6 +25,11 @@ public class UserService {
         log.debug("Fetching user with username: {}", username);
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+    }
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(UserDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
     @Transactional

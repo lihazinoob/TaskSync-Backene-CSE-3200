@@ -14,6 +14,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @Slf4j
 //@CrossOrigin(origins ="http://localhost:5173/")
@@ -65,6 +67,12 @@ public class UserController {
         //log.info("PUT /api/users/profile/update/{} called", username);
         return ResponseEntity.ok(userService.updateUserInformation(username, updateRequest));
     }
+    @GetMapping("/all")
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
 
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/profile/updatestatus/{username}")

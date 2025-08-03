@@ -193,5 +193,10 @@ public class User implements UserDetails {
     // User is subordinate in these hierarchies
     @OneToMany(mappedBy = "subordinateUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectUserHierarchy> hierarchiesAsSubordinate = new ArrayList<>();
+    // task assigned to assigned by relationship
+    @OneToMany(mappedBy = "assignedBy")
+    private List<Tasks> tasksAssignedBy;
 
+    @OneToMany(mappedBy = "assignedTo")
+    private List<Tasks> tasksAssignedTo;
 }
