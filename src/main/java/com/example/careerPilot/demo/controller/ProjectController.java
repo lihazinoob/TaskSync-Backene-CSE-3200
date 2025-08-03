@@ -6,6 +6,8 @@ import com.example.careerPilot.demo.service.ProjectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,16 +25,21 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping
+    public ResponseEntity<List<ProjectDTO>> getAllproject(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<ProjectDTO> projects = projectService.getAllProjects(PageRequest.of(page, size));
+        return ResponseEntity.ok(projects.getContent());
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
     public ResponseEntity<ProjectDTO> createProject(@Valid @RequestBody ProjectDTO projectDTO , @AuthenticationPrincipal UserDetails userDetails) {
         log.debug("Creating project: {}", projectDTO);
         ProjectDTO createdProject = projectService.createProject(projectDTO,userDetails);
         return ResponseEntity.ok(createdProject);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<ProjectDTO>> getAllProjects() {
-        return ResponseEntity.ok(projectService.getAllProjects());
     }
 
     @GetMapping("/{id}")

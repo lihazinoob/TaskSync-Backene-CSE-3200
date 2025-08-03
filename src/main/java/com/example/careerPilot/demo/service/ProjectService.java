@@ -8,6 +8,8 @@ import com.example.careerPilot.demo.repository.ProjectUserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import com.example.careerPilot.demo.repository.ProjectRepository;
@@ -54,10 +56,9 @@ public class ProjectService {
         return ProjectDTO.fromEntity(savedProject);
     }
 
-    public List<ProjectDTO> getAllProjects() {
-        return projectRepository.findAll().stream()
-                .map(ProjectDTO::fromEntity)
-                .toList();
+    public Page<ProjectDTO> getAllProjects(Pageable pageable) {
+        return projectRepository.findAll(pageable)
+                .map(ProjectDTO::fromEntity);
     }
 
     public ProjectDTO getProjectById(Long id) {
