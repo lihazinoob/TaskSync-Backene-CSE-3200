@@ -29,7 +29,7 @@
         }
 
         @Transactional
-        public CompanyDTO createCompany(CompanyRequest request, String username) {
+        public CompanyDTO createCompany(CompanyDTO request, String username) {
             User creator = userRepository.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -40,6 +40,8 @@
             company.setLocation(request.getLocation());
             company.setContactEmail(request.getContactEmail());
             company.setCreatedBy(creator);
+            company.setCompanyImageUrl(request.getCompanyImageURL().getUrl());
+            company.setCompanyImagePublicId(request.getCompanyImageURL().getPublicId());
             company = companyRepository.save(company);
 
             // Add creator as admin
@@ -55,7 +57,7 @@
             return CompanyDTO.fromEntity(company);
         }
 
-        public CompanyDTO updateCompany(Long id, CompanyRequest request, String username) {
+        public CompanyDTO updateCompany(Long id, CompanyDTO request, String username) {
             Company company = companyRepository.findById(id)
                     .orElseThrow(()-> new CompanyNotFoundException("Company not found with id: " + id));
 
@@ -67,6 +69,8 @@
             company.setIndustry(request.getIndustry());
             company.setLocation(request.getLocation());
             company.setContactEmail(request.getContactEmail());
+            company.setCompanyImageUrl(request.getCompanyImageURL().getUrl());
+            company.setCompanyImagePublicId(request.getCompanyImageURL().getPublicId());
 
             return CompanyDTO.fromEntity(companyRepository.save(company));
         }

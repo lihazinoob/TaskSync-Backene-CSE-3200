@@ -5,6 +5,8 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+
+
 @Data
 public class CompanyDTO {
     private Long id;
@@ -16,6 +18,7 @@ public class CompanyDTO {
     private Integer noOfEmployee;
     private String createdByUsername;
     private LocalDateTime createdAt;
+    private CompanyImageDTO companyImageURL;
 
     public static CompanyDTO fromEntity(Company company) {
         CompanyDTO dto = new CompanyDTO();
@@ -28,6 +31,7 @@ public class CompanyDTO {
         dto.setNoOfEmployee(company.getNoOfEmployee());
         dto.setCreatedByUsername(company.getCreatedBy().getUsername());
         dto.setCreatedAt(company.getCreatedAt());
+        dto.setCompanyImageURL(new CompanyImageDTO(company.getCompanyImageUrl(), company.getCompanyImagePublicId()));
         return dto;
     }
 }

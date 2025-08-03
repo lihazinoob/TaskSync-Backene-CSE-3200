@@ -35,6 +35,7 @@ public class CompanyController {
 
         return ResponseEntity.ok(companyDTOS);
     }
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/creator/{creatorId}/allcompanies")
     public ResponseEntity<List<CompanyDTO>> getAllCompaniesByCreatorId(@PathVariable Long creatorId) {
@@ -46,7 +47,7 @@ public class CompanyController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<CompanyDTO> createCompany(
-            @Valid @RequestBody CompanyRequest request,
+            @Valid @RequestBody CompanyDTO request,
             @AuthenticationPrincipal UserDetails userDetails)
     {
         CompanyDTO company = companyService.createCompany(request, userDetails.getUsername());
@@ -58,7 +59,7 @@ public class CompanyController {
 
     public ResponseEntity<?> updateCompany(
             @PathVariable Long id,
-            @Valid @RequestBody CompanyRequest request,
+            @Valid @RequestBody CompanyDTO request,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         try {

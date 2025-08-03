@@ -49,6 +49,10 @@ public class Company {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+    @Column( name = "company_image_url")
+    private String companyImageUrl;
+    @Column(name = "company_image_public_id")
+    private String companyImagePublicId;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CompanyEmployee> companyEmployees;
