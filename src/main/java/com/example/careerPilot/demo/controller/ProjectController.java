@@ -26,12 +26,9 @@ public class ProjectController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping
-    public ResponseEntity<List<ProjectDTO>> getAllproject(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Page<ProjectDTO> projects = projectService.getAllProjects(PageRequest.of(page, size));
-        return ResponseEntity.ok(projects.getContent());
+    public ResponseEntity<List<ProjectDTO>> getAllproject() {
+        List<ProjectDTO> projects = projectService.getAllProjects();
+        return ResponseEntity.ok(projects);
     }
 
     @PreAuthorize("isAuthenticated()")
