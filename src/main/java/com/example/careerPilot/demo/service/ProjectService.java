@@ -56,10 +56,12 @@ public class ProjectService {
         return ProjectDTO.fromEntity(savedProject);
     }
 
-    public Page<ProjectDTO> getAllProjects(Pageable pageable) {
-        return projectRepository.findAll(pageable)
-                .map(ProjectDTO::fromEntity);
-    }
+    public List<ProjectDTO> getAllProjects() {
+            return projectRepository.findAll()
+                    .stream()
+                    .map(ProjectDTO::fromEntity)
+                    .toList();
+        }
 
     public ProjectDTO getProjectById(Long id) {
         Project project = projectRepository.findById(id)

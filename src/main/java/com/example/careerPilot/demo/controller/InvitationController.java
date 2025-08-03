@@ -3,6 +3,8 @@ package com.example.careerPilot.demo.controller;
 
 import com.example.careerPilot.demo.dto.InvitationDTO;
 import com.example.careerPilot.demo.dto.InvitationRequest;
+import com.example.careerPilot.demo.entity.User;
+import com.example.careerPilot.demo.repository.InvitationRepository;
 import com.example.careerPilot.demo.service.InvitationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,12 +15,17 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import com.example.careerPilot.demo.repository.userRepository;
+
 @RestController
 @RequestMapping("/api/invitations")
 @RequiredArgsConstructor
 public class InvitationController {
 
     private final InvitationService invitationService;
+    private final InvitationRepository invitationRepository;
+    private final userRepository userRepository;
 
     @PostMapping("/{companyId}/invite")
     @PreAuthorize("isAuthenticated()")
@@ -48,5 +55,13 @@ public class InvitationController {
             @PathVariable Long invitationId,
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(invitationService.rejectInvitation(invitationId, userDetails.getUsername()));
+    }
+    public List<InvitationDTO> getInvitationsReceivedByUser(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return invitationRepository.findByInvitedUser(user)
+                .stream()
+                .map(InvitationDTO::fromEntity)
+                .toList();
     }
 }

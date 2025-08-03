@@ -14,5 +14,6 @@ public interface InvitationRepository extends JpaRepository<Invitation, Long> {
     List<Invitation> findByInvitedUserAndStatus(User user, InvitationStatus status);
     boolean existsByCompanyAndInvitedUserAndStatus(Company company, User user, InvitationStatus status);
 
+    List<Invitation> findByInvitedUser(User invitedUser);
     void deleteByCompanyId(Long id);
 }

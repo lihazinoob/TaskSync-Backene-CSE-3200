@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,8 +57,9 @@ public class TasksService {
         task.setStatus(true);
         task.setUpdatedAt(java.time.LocalDateTime.now());
         if (task.getProject() != null) {
-            updateProjectTasksCompleted(task.getProject().getProjectId());
+            updateProject(task.getProject() != null ? task.getProject().getProjectId() : null);
         }
+
         return TasksDTO.fromEntity(tasksRepository.save(task));
     }
 
@@ -75,7 +77,7 @@ public class TasksService {
                 .parent(dto.getParentId() != null ? tasksRepository.findById(dto.getParentId()).orElse(null) : null)
                 .project(getProjectById(dto.getProjectId()))
                 .build();
-        updateProjectTaskCount(dto.getProjectId());
+        updateProject(dto.getProjectId());
         return TasksDTO.fromEntity(tasksRepository.save(task));
 
     }
@@ -95,7 +97,7 @@ public class TasksService {
         if (dto.getParentId() != null) task.setParent(tasksRepository.findById(dto.getParentId()).orElse(null));
         if (dto.getProjectId() != null) task.setProject(getProjectById(dto.getProjectId()));
         if (task.getProject() != null) {
-            updateProjectTaskCount(task.getProject().getProjectId());
+            updateProject(dto.getProjectId());
         }
         return TasksDTO.fromEntity(tasksRepository.save(task));
     }
@@ -115,7 +117,7 @@ public class TasksService {
                 .parent(parent)
                 .project(getProjectById(dto.getProjectId()))
                 .build();
-        updateProjectTaskCount(dto.getProjectId());
+        updateProject(dto.getProjectId());
         return TasksDTO.fromEntity(tasksRepository.save(childTask));
     }
 
@@ -131,11 +133,34 @@ public class TasksService {
     public void deleteTask(Long id) {
         Tasks task = tasksRepository.findById(id).orElseThrow(()-> new RuntimeException("Task not found with id: " + id));
         if (task.getProject() != null) {
-            updateProjectTaskCount(task.getProject().getProjectId());
+            updateProject(task.getProject().getProjectId());
         }
         tasksRepository.deleteById(id);
     }
 
+    // update project details after task operations
+    private void updateProject(Long projectId) {
+        Project project = getProjectById(projectId);
+        if (project != null) {
+            updateProjectTaskCount(projectId);
+            updateProjectTasksCompleted(projectId);
+            updateProjectCompletion(projectId);
+        }
+    }
+    private void updateProjectCompletion(Long projectId) {
+        Project project = getProjectById(projectId);
+        if (project != null) {
+            int totalTasks = project.getTotalTasks();
+            int completedTasks = project.getTasksCompleted();
+            BigDecimal completion = BigDecimal.ZERO;
+            if (totalTasks > 0) {
+                completion = BigDecimal.valueOf(completedTasks)
+                        .divide(BigDecimal.valueOf(totalTasks), 2, BigDecimal.ROUND_HALF_UP);
+            }
+            project.setCompletion(completion);
+            projectRepository.save(project);
+        }
+    }
     private void updateProjectTaskCount(Long projectId) {
         Project project = getProjectById(projectId);
         if (project != null) {
@@ -156,6 +181,8 @@ public class TasksService {
             projectRepository.save(project);
         }
     }
+
+   //getting things
     private User getUserById(Long id) {
         return id == null ? null : userRepository.findById(id).orElse(null);
     }
