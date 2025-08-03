@@ -27,16 +27,16 @@ public class InvitationController {
     private final InvitationRepository invitationRepository;
     private final userRepository userRepository;
 
-    @PostMapping("/{companyId}/invite")
+    @PostMapping("/invite")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> sendInvitation(
-            @PathVariable Long companyId,
+
             @Valid @RequestBody InvitationRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
 
 
         try {
-            return ResponseEntity.ok(invitationService.createInvitation(companyId, request, userDetails.getUsername()));
+            return ResponseEntity.ok(invitationService.createInvitation( request, userDetails.getUsername()));
 
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());

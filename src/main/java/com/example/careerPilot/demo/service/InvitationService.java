@@ -27,10 +27,10 @@ public class InvitationService {
     private final CompanyEmployeeRepository companyEmployeeRepository;
 
     @Transactional
-    public InvitationDTO createInvitation(Long companyId, InvitationRequest request, String inviterUsername) {
+    public InvitationDTO createInvitation( InvitationRequest request, String inviterUsername) {
         User inviter = userRepository.findByUsername(inviterUsername)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-        Company company = companyRepository.findById(companyId)
+        Company company = companyRepository.findById(request.getCompanyId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Company not found"));
         User invitedUser = userRepository.findById(request.getInvitedUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invited user not found"));

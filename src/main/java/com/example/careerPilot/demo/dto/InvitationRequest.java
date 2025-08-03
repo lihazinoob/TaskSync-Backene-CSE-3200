@@ -8,6 +8,7 @@ import lombok.Data;
 public class InvitationRequest {
     @NotNull
     private Long invitedUserId;
+    private long CompanyId;
 
     @NotNull
     private CompanyEmployee.Role role;
