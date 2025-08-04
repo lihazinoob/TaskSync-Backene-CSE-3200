@@ -1,6 +1,7 @@
 package com.example.careerPilot.demo.dto;
 
 
+import com.example.careerPilot.demo.entity.Company;
 import lombok.Builder;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ public class ProjectDTO {
     private String status;
     private int totalTasks;
     private int tasksCompleted;
+    private long companyId;
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDateTime deadline;
@@ -38,6 +40,7 @@ public class ProjectDTO {
                 .status(project.getStatus() != null ? project.getStatus().name() : null)
                 .totalTasks(project.getTotalTasks())
                 .tasksCompleted(project.getTasksCompleted())
+                .companyId(project.getCompany().getId())
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
                 .deadline(project.getDeadline())

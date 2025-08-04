@@ -1,9 +1,11 @@
 package com.example.careerPilot.demo.service;
 
 import com.example.careerPilot.demo.dto.ProjectDTO;
+import com.example.careerPilot.demo.entity.Company;
 import com.example.careerPilot.demo.entity.Project;
 import com.example.careerPilot.demo.entity.ProjectUser;
 import com.example.careerPilot.demo.entity.User;
+import com.example.careerPilot.demo.repository.CompanyRepository;
 import com.example.careerPilot.demo.repository.ProjectUserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +27,15 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final userRepository userRepository;
     private final ProjectUserRepository projectUserRepository;
+    private final CompanyRepository companyRepository;
+
+
 
     public ProjectDTO createProject(@Valid ProjectDTO projectDTO, UserDetails userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + userDetails.getUsername()));
+        Company company = companyRepository.findById(projectDTO.getCompanyId())
+                .orElseThrow(() -> new RuntimeException("Company not found with id: " + projectDTO.getCompanyId()));
         Project project = Project.builder()
                 .name(projectDTO.getName())
                 .description(projectDTO.getDescription())
@@ -41,8 +48,9 @@ public class ProjectService {
                 .startDate(projectDTO.getStartDate())
                 .endDate(projectDTO.getEndDate())
                 .deadline(projectDTO.getDeadline())
-                .createdAt(java.time.LocalDateTime.now())
-                .updatedAt(java.time.LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .company(company)
                 .build();
         Project savedProject = projectRepository.save(project);
         ProjectUser projectUser = ProjectUser.builder()
@@ -50,18 +58,21 @@ public class ProjectService {
                 .user(user)
                 .role(Project.ProjectRole.CREATOR)
                 .status(ProjectUser.RequestStatus.APPROVED)
-                .joinedAt(java.time.LocalDateTime.now())
+                .joinedAt(LocalDateTime.now())
                 .build();
         projectUserRepository.save(projectUser);
         return ProjectDTO.fromEntity(savedProject);
     }
 
-    public List<ProjectDTO> getAllProjects() {
-            return projectRepository.findAll()
-                    .stream()
-                    .map(ProjectDTO::fromEntity)
-                    .toList();
-        }
+    // src/main/java/com/example/careerPilot/demo/service/ProjectService.java
+    public List<ProjectDTO> getAllProjects(Long companyId) {
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new RuntimeException("Company not found with id: " + companyId));
+        return projectRepository.findByCompany(company)
+                .stream()
+                .map(ProjectDTO::fromEntity)
+                .toList();
+    }
 
     public ProjectDTO getProjectById(Long id) {
         Project project = projectRepository.findById(id)
