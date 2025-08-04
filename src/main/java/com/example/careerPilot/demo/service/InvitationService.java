@@ -25,6 +25,7 @@ public class InvitationService {
     private final userRepository userRepository;
     private final CompanyRepository companyRepository;
     private final CompanyEmployeeRepository companyEmployeeRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public InvitationDTO createInvitation( InvitationRequest request, String inviterUsername) {
@@ -48,7 +49,9 @@ public class InvitationService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already belongs to this company");
         }
 
-
+        String notificationMessage  = "You have been invited to join the company " + company.getCompanyName() +
+                " as a " + request.getRole().name() + " by " + inviter.getUsername();
+        notificationService.createNotification(notificationMessage,invitedUser.getUsername());
 
         Invitation invitation = new Invitation();
         invitation.setCompany(company);
@@ -74,18 +77,33 @@ public class InvitationService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invitation already processed");
         }
 
+
         CompanyEmployee employee = new CompanyEmployee();
         employee.setUser(invitation.getInvitedUser());
         employee.setCompany(invitation.getCompany());
         employee.setRole(invitation.getRole());
+        employee.setJobTitle(invitation.getRole().toString());
         employee.setHiringDate(LocalDateTime.now());
         employee.setStatus(CompanyEmployee.Status.ACTIVE);
         companyEmployeeRepository.save(employee);
 
+        String notificationMessage = invitation.getInviter().getUsername() + "have accepted the invitation to join the company " + invitation.getCompany().getCompanyName() +
+                " as a " + invitation.getRole().name();
+        notificationService.createNotification(notificationMessage,invitation.getInviter().getUsername());
+
         invitation.setStatus(Invitation.InvitationStatus.ACCEPTED);
+
+        UpdateCompanyEmployee(invitation.getCompany(), employee);
         return InvitationDTO.fromEntity(invitationRepository.save(invitation));
     }
 
+    private void UpdateCompanyEmployee(Company company, CompanyEmployee companyEmployee)
+    {
+
+        int employee = companyEmployeeRepository.countByCompany(company);
+        employee++;
+        company.setNoOfEmployee(employee);
+    }
     public InvitationDTO rejectInvitation(Long invitationId, String username) {
         Invitation invitation = invitationRepository.findById(invitationId)
                 .orElseThrow();
@@ -93,7 +111,9 @@ public class InvitationService {
         if (!invitation.getInvitedUser().getUsername().equals(username)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only reject your own invitations");
         }
-
+        String notificationMessage = invitation.getInviter().getUsername() + "have rejected the invitation to join the company " + invitation.getCompany().getCompanyName() +
+                " as a " + invitation.getRole().name();
+        notificationService.createNotification(notificationMessage,invitation.getInviter().getUsername());
         invitation.setStatus(Invitation.InvitationStatus.REJECTED);
         return InvitationDTO.fromEntity(invitationRepository.save(invitation));
     }
