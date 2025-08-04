@@ -25,8 +25,8 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/{companyId}")
-    public ResponseEntity<List<ProjectDTO>> getAllproject(@RequestBody Long companyId) {
+    @GetMapping("getall/{companyId}")
+    public ResponseEntity<List<ProjectDTO>> getAllproject(@PathVariable Long companyId) {
         List<ProjectDTO> projects = projectService.getAllProjects(companyId);
         return ResponseEntity.ok(projects);
     }
