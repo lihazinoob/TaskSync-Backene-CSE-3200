@@ -25,8 +25,9 @@ public class TasksService {
     private final com.example.careerPilot.demo.repository.userRepository userRepository;
     private final ProjectRepository projectRepository;
 
-    public List<TasksDTO> getAllTasks() {
-        return tasksRepository.findAll().stream()
+
+    public List<TasksDTO> getAllTasks(Long projectId) {
+        return tasksRepository.findByProject_ProjectId(projectId).stream()
                 .map(TasksDTO::fromEntity)
                 .collect(Collectors.toList());
     }

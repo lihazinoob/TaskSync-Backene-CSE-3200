@@ -15,9 +15,9 @@ public class TasksController {
 
     private final TasksService tasksService;
 
-    @GetMapping
-    public List<TasksDTO> getAllTasks() {
-        return tasksService.getAllTasks();
+    @GetMapping("/{projectId}")
+    public List<TasksDTO> getAllTasks(@PathVariable Long projectId ) {
+        return tasksService.getAllTasks(projectId );
     }
     @GetMapping("/assigned-to/{userId}")
     public List<TasksDTO> getTasksByAssignedTo(@PathVariable Long userId) {
