@@ -146,6 +146,7 @@ public class TasksService {
             updateProjectTaskCount(projectId);
             updateProjectTasksCompleted(projectId);
             updateProjectCompletion(projectId);
+            updateProjectTasksCompleted(projectId);
         }
     }
     private void updateProjectCompletion(Long projectId) {
