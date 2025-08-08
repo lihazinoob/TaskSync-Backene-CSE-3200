@@ -92,5 +92,13 @@ public class UserService {
         user.setLanguage(updateRequest.getLanguage());
         return UserDTO.fromEntity(userRepository.save(user));
     }
+
+    public User updateProfilePicture(String username, UserProfileUpdateRequest updateRequest) {
+        User user = getUserByUsername(username);
+        if (updateRequest.getProfileImage() != null) {
+            user.setProfileImage(updateRequest.getProfileImage());
+        }
+        return userRepository.save(user);
+    }
 }
 

@@ -72,6 +72,14 @@ public class UserController {
         List<UserDTO> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/dp")
+    public ResponseEntity updateDp(@AuthenticationPrincipal UserDetails userDetails,
+                                   @RequestBody UserProfileUpdateRequest updateRequest) {
+        log.info("PUT /api/users/dp called for user: {}", userDetails.getUsername());
+        User updatedUser = userService.updateProfilePicture(userDetails.getUsername(), updateRequest);
+        return ResponseEntity.ok(UserDTO.fromEntity(updatedUser));
+    }
 
 
     @PreAuthorize("isAuthenticated()")

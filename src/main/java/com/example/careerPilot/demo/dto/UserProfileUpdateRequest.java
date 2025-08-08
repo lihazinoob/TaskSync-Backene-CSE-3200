@@ -21,7 +21,7 @@ public class UserProfileUpdateRequest {
     @Size(max = 60, message = "Country name cannot exceed 60 characters")
     private String country;
 
-    @Size(max = 255, message = "Profile image URL cannot exceed 255 characters")
+    @Size(max = 512, message = "Profile image URL cannot exceed 255 characters")
     @Pattern(regexp = "^(https?://.*|)$", message = "Profile image must be a valid URL or empty")
     private String profileImage;
 

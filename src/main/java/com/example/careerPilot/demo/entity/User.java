@@ -100,6 +100,8 @@ public class User implements UserDetails {
 
     @Column(name = "language", columnDefinition = "varchar(255) default 'en'")
     private String language;
+    @Column (name = "profile_picture", columnDefinition = "TEXT")
+    private String profile_picture;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
